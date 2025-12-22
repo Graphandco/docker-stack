@@ -1,0 +1,17 @@
+services:
+  directus:
+    image: directus/directus:latest
+    container_name: directus-main
+    restart: unless-stopped
+    ports:
+      - "8055:8055"
+    env_file:
+      - .env
+    volumes:
+      - ./uploads:/directus/uploads
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    external: true

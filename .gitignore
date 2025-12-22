@@ -1,0 +1,11 @@
+# Secrets
+**/.env
+
+# Données persistantes Docker
+infra/mysql-data/
+directus/uploads/
+wordpress-sites/*/wp-data/
+
+# Applications gérées par leurs propres repos
+nextapps/
+graphandco-2026
