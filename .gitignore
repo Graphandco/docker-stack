@@ -5,6 +5,7 @@
 infra/mysql-data/
 directus/uploads/
 wordpress-sites/*/wp-data/
+wp-content/
 
 # Applications gérées par leurs propres repos
 nextapps/

@@ -1,0 +1,22 @@
+services:
+  wordpress:
+    image: wordpress:php8.2-apache
+    container_name: wordpress-multisite
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      WORDPRESS_DB_HOST: mysql-main:3306
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: ED4dfA34@LMfc56!eRF?d45
+      WORDPRESS_DB_NAME: wp_multisite
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
+      - ./wp-config.php:/var/www/html/wp-config.php
+      - ./php-conf/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    external: true
