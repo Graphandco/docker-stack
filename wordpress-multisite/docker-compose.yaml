@@ -6,10 +6,10 @@ services:
     ports:
       - "8081:80"
     environment:
-      WORDPRESS_DB_HOST: mysql-main:3306
-      WORDPRESS_DB_USER: wp_user
-      WORDPRESS_DB_PASSWORD: ED4dfA34@LMfc56!eRF?d45
-      WORDPRESS_DB_NAME: wp_multisite
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
     volumes:
       - ./wp-content:/var/www/html/wp-content
       - ./wp-config.php:/var/www/html/wp-config.php

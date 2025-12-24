@@ -10,3 +10,5 @@ wp-config.php
 
 # Applications gérées par leurs propres repos
 nextapps/
+
+quick-commit.sh
