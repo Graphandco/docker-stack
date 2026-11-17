@@ -1,0 +1,24 @@
+services:
+   mysql:
+      image: mysql:9.7
+      container_name: mysql-main
+      restart: unless-stopped
+      env_file:
+         - .env
+      volumes:
+         - ./mysql-data:/var/lib/mysql
+         - ./my.cnf:/etc/mysql/conf.d/my.cnf
+      networks:
+         - web-network
+      cpus: 2.0
+      mem_limit: 3072m
+      security_opt:
+         - no-new-privileges:true
+      logging:
+         driver: "json-file"
+         options:
+            max-size: "10m"
+            max-file: "3"
+networks:
+   web-network:
+      external: true

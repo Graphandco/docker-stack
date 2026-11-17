@@ -1,0 +1,22 @@
+services:
+   adminer:
+      image: adminer:latest
+      container_name: adminer
+      restart: "no"
+
+      networks:
+         - web-network
+
+      cpus: 0.25
+      mem_limit: 128m
+
+      security_opt:
+         - no-new-privileges:true
+
+      environment:
+         # optionnel : serveur par défaut MySQL
+         ADMINER_DEFAULT_SERVER: mysql-main
+
+networks:
+   web-network:
+      external: true

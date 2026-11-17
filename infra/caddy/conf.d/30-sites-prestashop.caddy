@@ -1,0 +1,18 @@
+# sites/prestashop/trackinstudio
+
+trackinstudio.graphandco.com {
+	import logging
+	encode gzip zstd
+
+	reverse_proxy trackinstudio:80
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		X-XSS-Protection "1; mode=block"
+		Referrer-Policy "no-referrer-when-downgrade"
+		# CSP assouplie (paiements / analytics / CDN)
+		Content-Security-Policy "default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; frame-src 'self' https:; connect-src 'self' https:; base-uri 'self'"
+	}
+}

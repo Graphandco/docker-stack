@@ -1,0 +1,19 @@
+services:
+  nextcloud:
+    image: nextcloud:32-fpm
+    container_name: nextcloud
+    restart: unless-stopped
+    pull_policy: always
+    environment:
+      MYSQL_HOST: mysql-main
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: user_nextcloud
+      MYSQL_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+    volumes:
+      - ./data:/var/www/html  # données Nextcloud et config
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    external: true

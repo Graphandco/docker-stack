@@ -1,0 +1,9 @@
+[submodule "apps/admin-dashboard/admin-api"]
+	path = apps/admin-dashboard/admin-api
+	url = git@github.com:Graphandco/admin-api.git
+[submodule "apps/admin-dashboard/admin-panel"]
+	path = apps/admin-dashboard/admin-panel
+	url = git@github.com:Graphandco/admin-panel.git
+[submodule "sites/wordpress/wp-content/themes"]
+	path = sites/wordpress/wp-content/themes
+	url = git@github.com:Graphandco/multisite-wordpress-docker.git

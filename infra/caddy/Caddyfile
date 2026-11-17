@@ -1,0 +1,20 @@
+{
+	email contact@graphandco.com
+
+	# Admin API Docker only — ne pas publier 2019 sur l'hôte
+	admin 0.0.0.0:2019 {
+		origins caddy:2019 localhost:2019 127.0.0.1:2019
+	}
+
+	log system {
+		output file /var/log/caddy/caddy.log {
+			roll_size 10mb
+			roll_keep 10
+		}
+		format console
+		level INFO
+	}
+}
+
+import snippets.caddy
+import /etc/caddy/conf.d/*.caddy

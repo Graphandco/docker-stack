@@ -1,0 +1,18 @@
+services:
+   vaultwarden:
+      image: vaultwarden/server:latest
+      pull_policy: always
+      container_name: bitwarden
+      restart: always
+      environment:
+         - SIGNUPS_ALLOWED=true # Permet de créer ton compte. On le passera sur "false" juste après.
+      networks:
+         - web-network
+      volumes:
+         - ./bitwarden-data:/data
+      ports:
+         - 127.0.0.1:8080:80 # On écoute sur le port 8080, UNIQUEMENT en local (localhost)
+
+networks:
+   web-network:
+      external: true

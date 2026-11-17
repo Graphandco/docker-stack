@@ -1,0 +1,35 @@
+services:
+   app:
+      platform: linux/amd64
+      container_name: rl-etudes
+      image: dockerhub.graphandco.com/rl-etudes:latest
+      pull_policy: always
+      restart: unless-stopped
+      env_file:
+         - .env
+      networks:
+         - web-network
+
+      # Sécurité de base (Hardening)
+      cpus: 0.5
+      mem_limit: 512m
+      security_opt:
+         - no-new-privileges:true
+      tmpfs:
+         - /tmp:rw,noexec,nosuid,size=128m
+      volumes:
+         - next_cache:/app/.next/cache
+
+      # Logs maîtrisés
+      logging:
+         driver: "json-file"
+         options:
+            max-size: "10m"
+            max-file: "3"
+
+volumes:
+   next_cache:
+
+networks:
+   web-network:
+      external: true

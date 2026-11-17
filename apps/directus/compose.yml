@@ -1,0 +1,16 @@
+services:
+   directus:
+      image: directus/directus:latest
+      container_name: directus
+      restart: unless-stopped
+      env_file:
+         - .env
+      volumes:
+         - ./uploads:/directus/uploads
+         - ./extensions:/directus/extensions
+      networks:
+         - web-network
+
+networks:
+   web-network:
+      external: true

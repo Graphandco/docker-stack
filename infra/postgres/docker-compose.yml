@@ -1,0 +1,30 @@
+services:
+   postgres:
+      image: postgres:16-alpine
+      container_name: postgres-main
+      restart: unless-stopped
+      env_file:
+         - .env
+      volumes:
+         - ./pgdata:/var/lib/postgresql/data
+         # - ./init:/docker-entrypoint-initdb.d:ro
+      networks:
+         - web-network
+      cpus: 1.0
+      mem_limit: 1024m
+      healthcheck:
+         test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+         interval: 10s
+         timeout: 5s
+         retries: 5
+      security_opt:
+         - no-new-privileges:true
+      logging:
+         driver: "json-file"
+         options:
+            max-size: "10m"
+            max-file: "3"
+
+networks:
+   web-network:
+      external: true

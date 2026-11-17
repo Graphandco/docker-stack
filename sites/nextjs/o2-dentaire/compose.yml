@@ -1,0 +1,39 @@
+services:
+   app:
+      container_name: o2-dentaire
+      platform: linux/amd64
+      image: dockerhub.graphandco.com/o2-dentaire:latest
+      pull_policy: always
+      restart: unless-stopped
+      env_file:
+         - .env
+      environment:
+         HOSTNAME: 0.0.0.0
+         PORT: 3003
+      networks:
+         - web-network
+
+      # Sécurité de base (Hardening)
+      cpus: 0.5
+      mem_limit: 512m
+      read_only: true
+      security_opt:
+         - no-new-privileges:true
+      tmpfs:
+         - /tmp:rw,noexec,nosuid,size=128m
+      volumes:
+         - next_cache:/app/.next/cache
+
+      # Logs maîtrisés
+      logging:
+         driver: "json-file"
+         options:
+            max-size: "10m"
+            max-file: "3"
+
+volumes:
+   next_cache:
+
+networks:
+   web-network:
+      external: true

@@ -1,0 +1,33 @@
+# Sites HTML statiques + assets publics
+
+burgerio.graphandco.com {
+	root * /var/www/html/small-projects/burgerio
+	import static_site
+}
+www.burgerio.graphandco.com {
+	import www_to_apex burgerio.graphandco.com
+}
+barber.graphandco.com {
+	root * /var/www/html/small-projects/barber-shop
+	import static_site
+}
+www.barber.graphandco.com {
+	import www_to_apex barber.graphandco.com
+}
+fylo.graphandco.com {
+	root * /var/www/html/small-projects/fylo-storage
+	import static_site
+}
+www.fylo.graphandco.com {
+	import www_to_apex fylo.graphandco.com
+}
+# Assets publics
+assets.graphandco.net {
+	import logging
+	encode gzip zstd
+	root * /var/www/assets
+	file_server
+}
+www.assets.graphandco.net {
+	import www_to_apex assets.graphandco.net
+}

@@ -1,0 +1,87 @@
+# sites/nextjs — aligné sur docker-stack/sites/nextjs/
+
+# graphandco
+graphandco.com {
+	import proxy_app graphandco:3000
+
+	redir /realisations /projets 301
+	redir /realisations/ /projets/ 301
+	redir /realisations/{path:*} /projets/{path} 301
+	redir /prestations /offres 301
+	redir /prestations/ /offres/ 301
+	redir /politique-de-confidentialite /politique-confidentialite 301
+	redir /politique-de-confidentialite/ /politique-confidentialite/ 301
+
+	@static path_regexp static-assets ^/(_next/static|_next/image|static)/.*
+	handle @static {
+		header Cache-Control "public, max-age=31536000, immutable"
+		reverse_proxy graphandco:3000
+	}
+
+	import secure_headers
+}
+
+# Alias → graphandco.com (sans permanent, volontaire)
+www.graphandco.com,
+graphandco.net,
+www.graphandco.net,
+framer.graphandco.com,
+www.framer.graphandco.com {
+	redir https://graphandco.com{uri}
+}
+
+# graphandco-2026
+next-2026.graphandco.com {
+	import proxy_app graphandco-2026:3006
+}
+
+# lucelle-app
+shopping-list.graphandco.com {
+	import proxy_app lucelle-app:3001
+}
+www.shopping-list.graphandco.com {
+	import www_to_apex shopping-list.graphandco.com
+}
+
+# o2-dentaire
+o2dentaire.graphandco.com,
+o2dentaire.fr {
+	import proxy_app o2-dentaire:3003
+}
+
+# elsass-compta
+elsass-compta.graphandco.net,
+elsass-compta.fr {
+	import proxy_app elsass-compta:3004
+	redir /actualites https://actualites.elsass-compta.fr 301
+}
+www.elsass-compta.fr {
+	import www_to_apex elsass-compta.fr
+}
+www.admin.elsass-compta.fr {
+	import www_to_apex admin.elsass-compta.fr
+}
+
+# infirmiere68000
+infirmiere68000.fr {
+	import proxy_app infirmiere68000:3005
+}
+www.infirmiere68000.fr,
+infirmieres68000.fr,
+www.infirmieres68000.fr,
+infirmiere68000.com,
+www.infirmiere68000.com,
+infirmieres68000.com,
+www.infirmieres68000.com {
+	import www_to_apex infirmiere68000.fr
+}
+
+# rl-etudes
+rletudes.fr {
+	import proxy_app rl-etudes:3007
+}
+www.rletudes.fr,
+rletudes.graphandco.com,
+www.rletudes.graphandco.com {
+	import www_to_apex rletudes.fr
+}

@@ -1,0 +1,136 @@
+# apps/* — outils / apps internes (docker-stack/apps/)
+
+# matomo
+stats.graphandco.com {
+	import proxy_app matomo:80
+}
+www.stats.graphandco.com {
+	import www_to_apex stats.graphandco.com
+}
+
+# youclickyoucollect
+payload.graphandco.com,
+clickandcollect.graphandco.com,
+youclickyoucollect.fr {
+	import proxy_app youclickyoucollect:3000
+}
+
+# snapotter (upload long)
+snapotter.graphandco.com {
+	import logging
+	encode gzip zstd
+
+	request_body {
+		max_size 200mb
+	}
+
+	reverse_proxy snapotter:1349 {
+		transport http {
+			read_timeout 300s
+			write_timeout 300s
+		}
+	}
+}
+
+# convert-image
+convert-image.graphandco.com {
+	import logging
+	encode gzip zstd
+
+	request_body {
+		max_size 100mb
+	}
+
+	reverse_proxy convert-image:3008 {
+		transport http {
+			read_timeout 300s
+			write_timeout 300s
+		}
+	}
+}
+www.convert-image.graphandco.com {
+	import www_to_apex convert-image.graphandco.com
+}
+
+# nextcloud
+cloud.graphandco.com {
+	import logging
+	encode gzip zstd
+
+	root * /var/www/nextcloud
+
+	php_fastcgi nextcloud:9000 {
+		root /var/www/html
+	}
+
+	file_server
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "no-referrer"
+		X-XSS-Protection "1; mode=block"
+	}
+}
+
+# admin-dashboard / admin-panel (TLS DNS Cloudflare)
+vps.graphandco.com {
+	import proxy_app admin-panel:3010
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+}
+
+# admin-panel dev (hot-reload, parallèle à la prod)
+dev.vps.graphandco.com {
+	import proxy_app admin-panel-dev:3010
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+}
+
+# sandbox
+sandbox.graphandco.com {
+	import logging
+	encode gzip zstd
+
+	reverse_proxy sandbox:2999
+
+	basic_auth {
+		graphandco $2a$14$h6TjPcALJXIBrhkQorPkDuL85k9n4rsoX4U2jX9g5nXyT2wNr5b/q
+	}
+
+	@static path_regexp static \.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$
+	header @static Cache-Control "public, max-age=31536000, immutable"
+
+	header / Link "</fonts.googleapis.com>; rel=preconnect; crossorigin"
+
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+	}
+}
+
+directus.graphandco.com {
+	import proxy_app directus:8055
+}
+
+photos.graphandco.com {
+	import proxy_app graphandphotos:3000
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+}
+
+
+homarr.graphandco.com {
+	import proxy_app homarr:7575
+}
+# postiz (calendrier de publication blog + réseaux sociaux)
+postiz.graphandco.com {
+	import proxy_app postiz-app:5000
+}

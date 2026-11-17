@@ -1,14 +1,40 @@
 # Secrets
 **/.env
+.env
+.env.local
+.env.production
 
-# Données persistantes Docker
-infra/mysql-data/
-directus/uploads/
-wordpress-sites/*/wp-data/
-wp-content/
-wp-config.php
+node_modules
+.DS_Store
+debug.log
 
-# Applications gérées par leurs propres repos
-nextapps/
+# Apps
+apps/directus/uploads
+apps/matomo/matomo-data
+apps/nextcloud/data
 
-quick-commit.sh
+# Infra — données runtime
+infra/bitwarden/bitwarden-data/
+infra/dockerhub/data/
+infra/mysql/mysql-data/
+infra/postgres/pgdata/
+infra/seaweedfs/data/
+
+# Infra — sauvegardes
+infra/dockerhub/auth/*.bak
+
+# Sites
+sites/prestashop/trackinstudio/*
+!sites/prestashop/trackinstudio/compose.yml
+!sites/prestashop/trackinstudio/.env
+!sites/prestashop/trackinstudio/.gitignore
+sites/wordpress/wp-content/ewww
+sites/wordpress/wp-content/languages
+sites/wordpress/wp-content/object-cache.php
+sites/wordpress/wp-content/plugins/*
+!sites/wordpress/wp-content/plugins/fix-media-delete-popup
+!sites/wordpress/wp-content/plugins/graphandco-config
+sites/wordpress/wp-content/upgrade*
+sites/wordpress/wp-content/uploads
+sites/wordpress/wp-content/themes
+

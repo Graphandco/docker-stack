@@ -1,0 +1,37 @@
+# infra/* — infrastructure partagée (docker-stack/infra/)
+
+# adminer
+adminer.graphandco.com {
+	import proxy_app adminer:8080
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+}
+
+# supabase
+supabase.graphandco.com {
+	import proxy_app supabase-kong:8000
+}
+
+# bitwarden
+password.graphandco.com {
+	import proxy_app bitwarden:80
+}
+
+# dockerhub (registry)
+dockerhub.graphandco.com {
+	import proxy_app dockerhub:5000
+}
+
+# Interface d'administration Web (Master / Filer UI)
+seaweedfs.graphandco.com {
+    import proxy_app seaweedfs:8888
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+}
+
+# API S3 (à renseigner dans WordPress)
+s3.graphandco.com {
+    import proxy_app seaweedfs:8336
+}

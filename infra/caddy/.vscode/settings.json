@@ -1,0 +1,11 @@
+{
+  "files.associations": {
+    "*.caddy": "caddyfile",
+    "Caddyfile": "caddyfile",
+    "snippets.caddy": "caddyfile"
+  },
+  "[caddyfile]": {
+    "editor.insertSpaces": false,
+    "editor.tabSize": 4
+  }
+}

@@ -1,0 +1,23 @@
+services:
+   registry:
+      image: registry:2.8.3
+      container_name: dockerhub
+      restart: always
+      environment:
+         REGISTRY_AUTH: htpasswd
+         REGISTRY_AUTH_HTPASSWD_REALM: Registry
+         REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.password
+         REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+         REGISTRY_STORAGE_DELETE_ENABLED: "true"
+         GOGC: "30"
+      mem_limit: 256m
+      memswap_limit: 256m
+      volumes:
+         - ./auth:/auth
+         - ./data:/data
+      networks:
+         - web-network
+
+networks:
+   web-network:
+      external: true

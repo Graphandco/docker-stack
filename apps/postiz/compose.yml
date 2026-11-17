@@ -1,0 +1,146 @@
+services:
+  postiz:
+    image: ghcr.io/gitroomhq/postiz-app:latest
+    container_name: postiz-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MAIN_URL: "https://postiz.graphandco.com"
+      FRONTEND_URL: "https://postiz.graphandco.com"
+      NEXT_PUBLIC_BACKEND_URL: "https://postiz.graphandco.com/api"
+      BACKEND_INTERNAL_URL: "http://localhost:3000"
+      DATABASE_URL: "postgresql://postiz_user:${POSTIZ_DB_PASSWORD}@postgres-main:5432/postiz"
+      REDIS_URL: "redis://redis-cache:6379/3"
+      TEMPORAL_ADDRESS: "postiz-temporal:7233"
+      IS_GENERAL: "true"
+      DISABLE_REGISTRATION: "true"
+      RUN_CRON: "true"
+      STORAGE_PROVIDER: "local"
+      UPLOAD_DIRECTORY: "/uploads"
+      NEXT_PUBLIC_UPLOAD_DIRECTORY: "/uploads"
+      API_LIMIT: "90"
+    volumes:
+      - postiz-config:/config/
+      - postiz-uploads:/uploads/
+    networks:
+      - web-network
+    cpus: 2.0
+    mem_limit: 2048m
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "const r=require('http').get('http://localhost:5000/',res=>process.exit(res.statusCode<500?0:1));r.on('error',()=>process.exit(1));r.setTimeout(4000,()=>{r.destroy();process.exit(1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    depends_on:
+      postiz-temporal:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  postiz-elasticsearch:
+    image: elasticsearch:7.17.27
+    container_name: postiz-elasticsearch
+    restart: unless-stopped
+    environment:
+      - cluster.routing.allocation.disk.threshold_enabled=true
+      - cluster.routing.allocation.disk.watermark.low=512mb
+      - cluster.routing.allocation.disk.watermark.high=256mb
+      - cluster.routing.allocation.disk.watermark.flood_stage=128mb
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms256m -Xmx256m
+      - xpack.security.enabled=false
+    networks:
+      - web-network
+    cpus: 0.75
+    mem_limit: 768m
+    volumes:
+      - postiz-elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS \"http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s\" || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  postiz-temporal:
+    image: temporalio/auto-setup:1.28.1
+    container_name: postiz-temporal
+    restart: unless-stopped
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal_user
+      - POSTGRES_PWD=${TEMPORAL_DB_PASSWORD}
+      - POSTGRES_SEEDS=postgres-main
+      - DBNAME=temporal
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
+      - TEMPORAL_ADDRESS=postiz-temporal:7233
+      - TEMPORAL_CLI_ADDRESS=postiz-temporal:7233
+      - TEMPORAL_NAMESPACE=default
+      - SKIP_DB_CREATE=true
+      - ENABLE_ES=true
+      - ES_SEEDS=postiz-elasticsearch
+      - ES_VERSION=v7
+    volumes:
+      - ./dynamicconfig:/etc/temporal/config/dynamicconfig
+    networks:
+      - web-network
+    cpus: 0.5
+    mem_limit: 512m
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "temporal", "operator", "cluster", "health", "--address", "postiz-temporal:7233"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      postiz-elasticsearch:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  postiz-temporal-admin-tools:
+    image: temporalio/admin-tools:1.28.1-tctl-1.18.4-cli-1.4.1
+    container_name: postiz-temporal-admin-tools
+    restart: "no"
+    environment:
+      - TEMPORAL_ADDRESS=postiz-temporal:7233
+      - TEMPORAL_CLI_ADDRESS=postiz-temporal:7233
+    networks:
+      - web-network
+    stdin_open: true
+    tty: true
+    depends_on:
+      postiz-temporal:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postiz-config:
+  postiz-uploads:
+  postiz-elasticsearch-data:
+
+networks:
+  web-network:
+    external: true

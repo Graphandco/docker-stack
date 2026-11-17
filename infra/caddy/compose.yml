@@ -1,0 +1,45 @@
+services:
+   caddy:
+      #image: caddy:latest
+      build: .
+      container_name: caddy
+      restart: unless-stopped
+      ports:
+         - "80:80"
+         - "443:443"
+         - "443:443/udp" # HTTP/3 (QUIC)
+         # Ne pas exposer 2019 : l'API admin Caddy reste sur web-network uniquement
+      env_file:
+         - .env
+      volumes:
+         - ./Caddyfile:/etc/caddy/Caddyfile:ro
+         - ./conf.d:/etc/caddy/conf.d:ro
+         - ./snippets.caddy:/etc/caddy/snippets.caddy:ro
+         - caddy_data:/data
+         - caddy_config:/config
+         - /var/log/caddy:/var/log/caddy
+         - /var/www/html:/var/www/html:ro
+         - /var/www/assets:/var/www/assets:ro
+         - /var/run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
+         - ../../apps/nextcloud/data:/var/www/nextcloud:ro
+      networks:
+         - web-network
+      cpus: 1.0
+      mem_limit: 512m
+      security_opt:
+         - no-new-privileges:true
+      logging:
+         driver: "json-file"
+         options:
+            max-size: "10m"
+            max-file: "5"
+
+volumes:
+   caddy_data:
+      name: caddy_data
+   caddy_config:
+      name: caddy_config
+
+networks:
+   web-network:
+      external: true

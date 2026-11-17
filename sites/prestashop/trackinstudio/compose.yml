@@ -1,0 +1,44 @@
+services:
+   trackinstudio:
+      platform: linux/amd64
+      container_name: trackinstudio
+      image: dockerhub.graphandco.com/trackinstudio:latest
+      pull_policy: always
+      restart: unless-stopped
+      env_file:
+         - .env
+      environment:
+         PS_DOMAIN: ${PS_DOMAIN}
+         PS_FOLDER_ADMIN: ${PS_FOLDER_ADMIN}
+         PS_INSTALL_AUTO: 1
+         PS_LANGUAGE: fr
+         PS_DEV_MODE: ${PS_DEV_MODE}
+         PS_ENABLE_SSL: 1
+         PS_TRUSTED_PROXIES: "private_ranges"
+         DB_SERVER: ${DB_SERVER}
+         DB_NAME: ${DB_NAME}
+         DB_USER: ${DB_USER}
+         DB_PASSWD: ${DB_PASSWD}
+         DB_PREFIX: ps_
+         ADMIN_MAIL: ${ADMIN_MAIL}
+         ADMIN_PASSWD: ${ADMIN_PASSWD}
+      volumes:
+         # Persistance boutique (core, médias, config, cache…)
+         # Thème/module custom : resynchronisés depuis l'image au démarrage
+         - psdata:/var/www/html
+      networks:
+         - web-network
+      mem_limit: 4g
+      cpus: 2.0
+      logging:
+         driver: "json-file"
+         options:
+            max-size: "10m"
+            max-file: "3"
+
+volumes:
+   psdata:
+
+networks:
+   web-network:
+      external: true

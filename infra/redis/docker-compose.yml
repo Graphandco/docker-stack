@@ -1,0 +1,21 @@
+services:
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    restart: unless-stopped
+    pull_policy: always
+
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save ""
+      --appendonly no
+
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    external: true

@@ -1,0 +1,31 @@
+services:
+   app:
+      platform: linux/amd64
+      container_name: graphandco-2026
+      image: dockerhub.graphandco.com/graphandco-2026:latest
+      pull_policy: always
+      restart: unless-stopped
+      # env_file:
+      #    - .env
+      environment:
+         HOSTNAME: 0.0.0.0
+         PORT: 3006
+      networks:
+         - web-network
+      volumes:
+         - next_cache:/app/.next/cache
+
+      # Logs maîtrisés
+      logging:
+         driver: "json-file"
+         options:
+            max-size: "10m"
+            max-file: "3"
+
+volumes:
+   next_cache:
+
+networks:
+   web-network:
+      external: true
+

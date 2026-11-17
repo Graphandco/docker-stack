@@ -1,0 +1,78 @@
+services:
+   wordpress:
+      image: wordpress:7.1-php8.3-apache
+      container_name: wordpress
+      restart: unless-stopped
+
+      environment:
+         WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+         WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+         WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+         WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+         WORDPRESS_S3_ACCESS_KEY: ${WORDPRESS_S3_ACCESS_KEY}
+         WORDPRESS_S3_SECRET_KEY: ${WORDPRESS_S3_SECRET_KEY}
+         WORDPRESS_S3_BUCKET: ${WORDPRESS_S3_BUCKET}
+         WORDPRESS_S3_ENDPOINT: ${WORDPRESS_S3_ENDPOINT}
+         WORDPRESS_S3_REGION: ${WORDPRESS_S3_REGION}
+
+      volumes:
+         - ./.htaccess:/var/www/html/.htaccess:ro
+         - ./wp-content:/var/www/html/wp-content
+         - ./wp-config.php:/var/www/html/wp-config.php:ro
+         - ./php-conf/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+         - ./php-conf/memory-limit.ini:/usr/local/etc/php/conf.d/memory-limit.ini:ro
+         - ./php-conf/99-php2shell.ini:/usr/local/etc/php/conf.d/99-php2shell.ini:ro
+
+      security_opt:
+         - no-new-privileges:true
+
+      networks:
+         - web-network
+
+      logging:
+         driver: "json-file"
+         options:
+            max-size: "10m"
+            max-file: "3"
+
+   wp-cli:
+      build:
+         context: .
+         dockerfile: wp-cli.Dockerfile
+      image: wordpress-wpcli
+      container_name: wordpress-wpcli
+      restart: unless-stopped
+      depends_on:
+         - wordpress
+      entrypoint: ["/bin/bash", "-c"]
+      command:
+         - |
+            if [ ! -f /var/www/html/wp-includes/version.php ]; then
+              echo "Copying WordPress core into /var/www/html..."
+              tar cf - -C /usr/src/wordpress . | tar xf - -C /var/www/html
+            fi
+            exec tail -f /dev/null
+
+      volumes:
+         - ./wp-content:/var/www/html/wp-content
+         - ./wp-config.php:/var/www/html/wp-config.php:ro
+         - ./php-conf/memory-limit.ini:/usr/local/etc/php/conf.d/memory-limit.ini:ro
+
+      environment:
+         WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+         WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+         WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+         WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+         PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT:-512M}
+         WORDPRESS_S3_ACCESS_KEY: ${WORDPRESS_S3_ACCESS_KEY}
+         WORDPRESS_S3_SECRET_KEY: ${WORDPRESS_S3_SECRET_KEY}
+         WORDPRESS_S3_BUCKET: ${WORDPRESS_S3_BUCKET}
+         WORDPRESS_S3_ENDPOINT: ${WORDPRESS_S3_ENDPOINT}
+         WORDPRESS_S3_REGION: ${WORDPRESS_S3_REGION}
+
+      networks:
+         - web-network
+
+networks:
+   web-network:
+      external: true

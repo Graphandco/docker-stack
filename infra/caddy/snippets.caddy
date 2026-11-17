@@ -1,0 +1,81 @@
+# Logging — access log JSON
+(logging) {
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 10mb
+			roll_keep 10
+			roll_keep_for 720h
+		}
+		format json
+	}
+}
+
+# proxy_app <host:port> — logging + encode + reverse_proxy
+(proxy_app) {
+	import logging
+	encode gzip zstd
+	reverse_proxy {args[0]}
+}
+
+# www_to_apex <domaine> — redirection 301 canonique
+(www_to_apex) {
+	redir https://{args[0]}{uri} permanent
+}
+
+# Headers de sécurité (défaut)
+(secure_headers) {
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		X-XSS-Protection "1; mode=block"
+	}
+}
+
+# WordPress multisite → wordpress:80
+(wp_multisite) {
+	import logging
+	encode gzip zstd
+
+	@wpadmin path ^/wp-admin$
+	redir @wpadmin /wp-admin/ 301
+
+	@static path_regexp static \.css|js|jpg|jpeg|png|svg|gif|ico|woff2?|ttf|eot|otf|mp4|webm|ogg|ogv|pdf|zip$
+	header @static Cache-Control "public, max-age=31536000, immutable"
+
+	handle /xmlrpc.php {
+		respond 403
+	}
+
+	reverse_proxy wordpress:80
+}
+
+# wp_uploads_seaweedfs <blog_id>
+# Sert les médias WordPress depuis le bucket SeaweedFS "wordpress".
+(wp_uploads_seaweedfs) {
+	handle_path /wp-content/uploads/sites/{args[0]}/* {
+		rewrite * /wordpress/uploads/sites/{args[0]}{path}
+		reverse_proxy seaweedfs:8336
+	}
+}
+
+# Sites statiques (file_server + cache)
+(static_site) {
+	import logging
+	encode gzip zstd
+	file_server
+	header {
+		Cache-Control "public, max-age=31536000, immutable"
+	}
+}
+
+# wp_uploads_seaweedfs_root
+# Sert les médias du site principal (blog 1), dont les uploads sont à la racine.
+(wp_uploads_seaweedfs_root) {
+	handle_path /wp-content/uploads/* {
+		rewrite * /wordpress/uploads{path}
+		reverse_proxy seaweedfs:8336
+	}
+}

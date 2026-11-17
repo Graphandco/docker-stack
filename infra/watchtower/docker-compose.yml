@@ -1,0 +1,35 @@
+services:
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOCKER_API_VERSION: "1.40"
+      WATCHTOWER_MONITOR_ONLY: "true"
+      WATCHTOWER_SCHEDULE: "0 0 5 * * 0"
+
+      # Liste des conteneurs privés/locaux à ignorer
+      WATCHTOWER_DISABLE_CONTAINERS: "rl-etudes elsass-compta infirmiere68000 admin-panel admin-api convert-image youclickyoucollect wordpress-wpcli trackinstudio graphandco-2026 graphandco o2-dentaire lucelle-app"
+
+      # Notification Telegram
+      WATCHTOWER_NOTIFICATION_URL: "telegram://${TELEGRAM_BOT_TOKEN}@telegram?chats=${TELEGRAM_CHAT_ID}"
+      WATCHTOWER_NOTIFICATIONS_LEVEL: "info"
+
+      # Template corrigé : la liste des logs est directement à la racine (.)
+      WATCHTOWER_NOTIFICATION_TEMPLATE: |
+        {{- if . -}}
+        🐳 *Watchtower - Mises à jour disponibles*
+
+        {{ range . -}}
+        • {{ .Message }}
+        {{ end -}}
+        {{- end -}}
+
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    external: true

@@ -1,0 +1,20 @@
+services:
+  payload:
+    platform: linux/amd64
+    image: dockerhub.graphandco.com/youclickyoucollect:latest
+    container_name: youclickyoucollect
+    pull_policy: always
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+    networks:
+      - web-network
+    volumes:
+      - ./media:/app/media
+
+networks:
+  web-network:
+    external: true

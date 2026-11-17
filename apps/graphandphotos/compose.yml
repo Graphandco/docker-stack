@@ -1,0 +1,31 @@
+services:
+   app:
+      platform: linux/amd64
+      container_name: graphandphotos
+      image: dockerhub.graphandco.com/graphandphotos:latest
+      pull_policy: always
+      restart: unless-stopped
+      env_file:
+         - .env
+      networks:
+         - web-network
+      cpus: 0.5
+      mem_limit: 512m
+      security_opt:
+         - no-new-privileges:true
+      tmpfs:
+         - /tmp:rw,noexec,nosuid,size=128m
+      volumes:
+         - next_cache:/app/.next/cache
+      logging:
+         driver: json-file
+         options:
+            max-size: 10m
+            max-file: "3"
+
+volumes:
+   next_cache:
+
+networks:
+   web-network:
+      external: true

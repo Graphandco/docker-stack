@@ -1,0 +1,92 @@
+# sites/wordpress — multisite
+
+holamate.fr {
+	import wp_multisite
+}
+sites.graphandco.net {
+	import wp_uploads_seaweedfs_root
+	import wp_multisite
+}
+admin.rletudes.fr {
+	import wp_uploads_seaweedfs 13
+	import wp_multisite
+}
+admin.elsass-compta.fr {
+	import wp_uploads_seaweedfs 14
+	import wp_multisite
+}
+admin.infirmiere68000.fr {
+	import wp_uploads_seaweedfs 10
+	import wp_multisite
+}
+admin-o2dentaire.graphandco.com {
+	import wp_uploads_seaweedfs 11
+	import wp_multisite
+}
+rdv.graphandco.net {
+	import wp_uploads_seaweedfs 7
+	import wp_multisite
+}
+3emechance.fr {
+	import wp_uploads_seaweedfs 6
+	import wp_multisite
+}
+bomot.fr {
+	import wp_uploads_seaweedfs 5
+	import wp_multisite
+}
+willow-tarot.fr {
+	import wp_uploads_seaweedfs 3
+	import wp_multisite
+}
+alsace-froid-energies.com {
+	import wp_uploads_seaweedfs 8
+	import wp_multisite
+	redir /prestations/piscines.html /prestations.html 301
+}
+peche-exotique.fr {
+	import wp_uploads_seaweedfs 4
+	import wp_multisite
+}
+loide-guitare.fr {
+	import wp_uploads_seaweedfs 2
+	import wp_multisite
+}
+
+# www → apex
+www.sites.graphandco.net {
+	import www_to_apex sites.graphandco.net
+}
+www.admin.graphandco.com {
+	import www_to_apex admin.graphandco.com
+}
+www.loide-guitare.fr {
+	import www_to_apex loide-guitare.fr
+}
+www.holamate.fr {
+	import www_to_apex holamate.fr
+}
+www.willow-tarot.fr {
+	import www_to_apex willow-tarot.fr
+}
+www.peche-exotique.fr {
+	import www_to_apex peche-exotique.fr
+}
+www.bomot.fr {
+	import www_to_apex bomot.fr
+}
+www.3emechance.fr {
+	import www_to_apex 3emechance.fr
+}
+www.admin.infirmiere68000.fr {
+	import www_to_apex admin.infirmiere68000.fr
+}
+www.admin.rletudes.fr {
+	import www_to_apex admin.rletudes.fr
+}
+www.rdv.graphandco.net {
+	import www_to_apex rdv.graphandco.net
+}
+www.alsace-froid-energies.com {
+   import www_to_apex alsace-froid-energies.com
+}

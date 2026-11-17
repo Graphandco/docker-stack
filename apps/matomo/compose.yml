@@ -1,0 +1,42 @@
+services:
+  app:
+    image: matomo:latest
+    container_name: matomo
+    restart: unless-stopped
+
+    # 1. Limites de ressources (Matomo peut être gourmand lors de l'archivage)
+    cpus: 0.75
+    mem_limit: 1024m
+
+    volumes:
+      - ./matomo-data:/var/www/html
+      # On peut forcer le config en lecture seule SI tu ne changes plus tes réglages
+      # - ./matomo-data/config/config.ini.php:/var/www/html/config/config.ini.php:ro
+
+    env_file:
+      - .env
+    environment:
+      - MATOMO_DATABASE_ADAPTER=mysql
+      - PHP_MEMORY_LIMIT=256M
+
+    networks:
+      - web-network
+
+    # 2. Sécurité système
+    security_opt:
+      - no-new-privileges:true
+
+    # 3. Zone temporaire sécurisée (Matomo l'utilise pour les sessions et le cache)
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=256m
+
+    # 4. Logs maîtrisés
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  web-network:
+    external: true
