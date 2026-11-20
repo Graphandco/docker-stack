@@ -1,6 +1,6 @@
 services:
   seaweedfs:
-    image: chrislusf/seaweedfs:4.53 
+    image: chrislusf/seaweedfs:4.54
     container_name: seaweedfs
     restart: unless-stopped
     command: 'server -dir=/data -s3 -s3.port=8336 -filer -volume.max=0'
