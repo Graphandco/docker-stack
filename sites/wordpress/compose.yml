@@ -1,6 +1,6 @@
 services:
    wordpress:
-      image: wordpress:7.1-php8.3-apache
+      image: wordpress:7.1-php8.3-fpm
       container_name: wordpress
       restart: unless-stopped
 
@@ -16,7 +16,7 @@ services:
          WORDPRESS_S3_REGION: ${WORDPRESS_S3_REGION}
 
       volumes:
-         - ./.htaccess:/var/www/html/.htaccess:ro
+         - wordpress_html:/var/www/html
          - ./wp-content:/var/www/html/wp-content
          - ./wp-config.php:/var/www/html/wp-config.php:ro
          - ./php-conf/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
@@ -76,3 +76,7 @@ services:
 networks:
    web-network:
       external: true
+
+volumes:
+   wordpress_html:
+      name: wordpress_html

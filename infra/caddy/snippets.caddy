@@ -34,7 +34,8 @@
 	}
 }
 
-# WordPress multisite → wordpress:80
+# WordPress multisite → wordpress:9000 (PHP-FPM)
+# Le bloc `route` garantit l'ordre : uploads → SeaweedFS AVANT try_files/php_fastcgi.
 (wp_multisite) {
 	import logging
 	encode gzip zstd
@@ -45,19 +46,26 @@
 	@static path_regexp static \.css|js|jpg|jpeg|png|svg|gif|ico|woff2?|ttf|eot|otf|mp4|webm|ogg|ogv|pdf|zip$
 	header @static Cache-Control "public, max-age=31536000, immutable"
 
-	handle /xmlrpc.php {
-		respond 403
-	}
+	root * /var/www/wordpress
 
-	reverse_proxy wordpress:80
-}
+	route {
+		handle /xmlrpc.php {
+			respond 403
+		}
 
-# wp_uploads_seaweedfs <blog_id>
-# Sert les médias WordPress depuis le bucket SeaweedFS "wordpress".
-(wp_uploads_seaweedfs) {
-	handle_path /wp-content/uploads/sites/{args[0]}/* {
-		rewrite * /wordpress/uploads/sites/{args[0]}{path}
-		reverse_proxy seaweedfs:8336
+		# Médias WordPress (tous blogs) → bucket SeaweedFS "wordpress"
+		handle_path /wp-content/uploads/* {
+			rewrite * /wordpress/uploads{path}
+			reverse_proxy seaweedfs:8336
+		}
+
+		try_files {path} {path}/ /index.php?{query}
+
+		php_fastcgi wordpress:9000 {
+			root /var/www/html
+		}
+
+		file_server
 	}
 }
 
@@ -68,14 +76,5 @@
 	file_server
 	header {
 		Cache-Control "public, max-age=31536000, immutable"
-	}
-}
-
-# wp_uploads_seaweedfs_root
-# Sert les médias du site principal (blog 1), dont les uploads sont à la racine.
-(wp_uploads_seaweedfs_root) {
-	handle_path /wp-content/uploads/* {
-		rewrite * /wordpress/uploads{path}
-		reverse_proxy seaweedfs:8336
 	}
 }

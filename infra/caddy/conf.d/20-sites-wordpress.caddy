@@ -1,56 +1,45 @@
 # sites/wordpress — multisite
+# Les médias /wp-content/uploads/* sont servis par SeaweedFS directement
+# dans le snippet wp_multisite (voir snippets.caddy) — plus besoin d'import par blog_id.
 
 holamate.fr {
-   import wp_uploads_seaweedfs 9
 	import wp_multisite
 }
 sites.graphandco.net {
-	import wp_uploads_seaweedfs_root
 	import wp_multisite
 }
 admin.rletudes.fr {
-	import wp_uploads_seaweedfs 13
 	import wp_multisite
 }
 admin.elsass-compta.fr {
-	import wp_uploads_seaweedfs 14
 	import wp_multisite
 }
 admin.infirmiere68000.fr {
-	import wp_uploads_seaweedfs 10
 	import wp_multisite
 }
 admin-o2dentaire.graphandco.com {
-	import wp_uploads_seaweedfs 11
 	import wp_multisite
 }
 rdv.graphandco.net {
-	import wp_uploads_seaweedfs 7
 	import wp_multisite
 }
 3emechance.fr {
-	import wp_uploads_seaweedfs 6
 	import wp_multisite
 }
 bomot.fr {
-	import wp_uploads_seaweedfs 5
 	import wp_multisite
 }
 willow-tarot.fr {
-	import wp_uploads_seaweedfs 3
 	import wp_multisite
 }
 alsace-froid-energies.com {
-	import wp_uploads_seaweedfs 8
 	import wp_multisite
 	redir /prestations/piscines.html /prestations.html 301
 }
 peche-exotique.fr {
-	import wp_uploads_seaweedfs 4
 	import wp_multisite
 }
 loide-guitare.fr {
-	import wp_uploads_seaweedfs 2
 	import wp_multisite
 }
 

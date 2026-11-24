@@ -1,5 +1,5 @@
 # Image avec WordPress complet + WP-CLI (wordpress:cli ne contient pas le coeur WP)
-FROM wordpress:7.1-php8.3-apache
+FROM wordpress:7.1-php8.3-fpm
 
 # Installation de WP-CLI (méthode officielle)
 RUN curl -sS -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \

@@ -20,6 +20,8 @@ services:
          - /var/log/caddy:/var/log/caddy
          - /var/www/html:/var/www/html:ro
          - /var/www/assets:/var/www/assets:ro
+         - wordpress_html:/var/www/wordpress:ro
+         - ../../sites/wordpress/wp-content:/var/www/wordpress/wp-content:ro
          - /var/run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
          - ../../apps/nextcloud/data:/var/www/nextcloud:ro
       networks:
@@ -39,6 +41,9 @@ volumes:
       name: caddy_data
    caddy_config:
       name: caddy_config
+   wordpress_html:
+      name: wordpress_html
+      external: true
 
 networks:
    web-network:
