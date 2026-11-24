@@ -77,6 +77,8 @@ docker compose build admin-api && docker compose up -d admin-api
 | Retrait deploy-runner / GHCR deploy.sh | api + panel | `b817ba01-…` |
 | SeaweedFS : bucket WordPress | api + panel | session courante |
 | SeaweedFS : sous-titre neutre | panel | session courante |
+| Connexions WP multisite (API réseau + carte accueil + dashboard) | api + panel | session courante |
+| Sessions actives réseau WordPress | api | session courante |
 
 ## Agents sources de ce journal initial
 
