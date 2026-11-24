@@ -1,6 +1,7 @@
 # sites/wordpress — multisite
 
 holamate.fr {
+   import wp_uploads_seaweedfs 9
 	import wp_multisite
 }
 sites.graphandco.net {
